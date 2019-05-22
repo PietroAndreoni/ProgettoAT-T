@@ -61,3 +61,6 @@ octave-workspace
 
 # Simulink autosave extension
 .autosave
+
+# Remove database files
+.mat
