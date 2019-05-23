@@ -63,4 +63,4 @@ octave-workspace
 .autosave
 
 # Remove database files
-.mat
+*.mat
