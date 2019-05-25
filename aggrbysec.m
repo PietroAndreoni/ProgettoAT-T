@@ -1,4 +1,4 @@
-function [Zaggr,faggr,Baggr,vaggr] = aggrbysec(Z,f,B,v)
+function [Zaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbysec(Z,f,B,R,E,v)
 %AGGRBYSEC Create a world I/O by sector
 %   Requires dimensions defined as global variables
 %   Requires all input insertion
@@ -28,6 +28,8 @@ end
 Zaggr = zeros(kTOT,kTOT);
 faggr = zeros(kTOT,fTOT);
 Baggr = zeros(trTOT,kTOT);
+Raggr = zeros(trTOT,kTOT);
+Eaggr = zeros(trTOT,kTOT);
 vaggr = zeros(fTOT,kTOT);
 
 for i=1:kTOT
@@ -36,6 +38,8 @@ for i=1:kTOT
             
             if i<trTOT+1
                 Baggr(i,j)= Baggr(i,j) + B(i,(n1-1)*trTOT + j);
+                Raggr(i,j)= Raggr(i,j) + R(i,(n1-1)*trTOT + j);
+                Eaggr(i,j)= Eaggr(i,j) + E(i,(n1-1)*trTOT + j);              
             end
             
             if i<fTOT+1

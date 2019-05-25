@@ -1,4 +1,4 @@
-function [Zaggr,faggr,Baggr,vaggr] = aggrbycountry(Z,f,B,v)
+function [Zaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbycountry(Z,f,B,R,E,v)
 %AGGRBYCOUNTRY Create a country I/O with all sectors aggregated
 %   Requires dimensions defined as global variables
 %   Requires all input insertion
@@ -28,6 +28,8 @@ end
 Zaggr = zeros(kTOT,kTOT);
 faggr = zeros(kTOT,fTOT);
 Baggr = zeros(trTOT,kTOT);
+Raggr = zeros(trTOT,kTOT);
+Eaggr = zeros(trTOT,kTOT);
 vaggr = zeros(fTOT,kTOT);
 
 for n1=1:nTOT
@@ -42,11 +44,14 @@ for n1=1:nTOT
                 end
                 
                 if i < trTOT+1
-                    Baggr(i,n2) = B(i,n2) + B(i, (n2-1)*trTOT + j);
+                    Baggr(i,n2) = Baggr(i,n2) + B(i, (n2-1)*trTOT + j);                   
+                    Raggr(i,n2) = Raggr(i,n2) + R(i, (n2-1)*trTOT + j);             
+                    Eaggr(i,n2) = Eaggr(i,n2) + E(i, (n2-1)*trTOT + j);
+                    
                 end
                 
                 if i < vTOT+1
-                    vaggr(i,n2) = v(i,n2) + v(i, (n2-1)*vTOT + j);
+                    vaggr(i,n2) = vaggr(i,n2) + v(i, (n2-1)*vTOT + j);
                 end 
                 
             end
