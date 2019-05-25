@@ -4,10 +4,13 @@ load("base_students.mat");
 
 % number of countries, sectors, final demand types and exogenous resources
 % in the model
+global nTOT kTOT fTOT trTOT vTOT
+
 nTOT = 48;
 kTOT = 163;
 fTOT = 7;
 trTOT = 12;
+vTOT = 7;
 
 %calculate Leontieff coefficients matrix and overall production
 L = inv(diag(ones(size(A,1),1))-A);
@@ -111,7 +114,6 @@ fd = 1;
 
 
 %sup stands for support variable
-
 sup_n = Z((n-1)*kTOT+1:n*kTOT,:); 
 
 j = 1;
@@ -122,7 +124,7 @@ for i=1:kTOT*nTOT
     end
 end
 
-intersecn = sum(sup_nsec,1); % intermediate demand in country n all sectors for product sec in all countries
+intersecn = sum(sup_nsec,1); % intermediate demand in country n all sectors for product sec by country
 
 %extract the n country fd final demand sector (portf) and select only
 %raws related to sec sector (porttr). This way we have a clear 
@@ -132,7 +134,7 @@ supf_n = f(:,(n-1)*fTOT + fd);
 j = 1;
 for i=1:kTOT*nTOT
     if mod(i-sec,kTOT) == 0
-        finalsecn(j) = supf_n(i); %final demand (from fd final demand sector) for sec product from all countries in country n
+        finalsecn(j) = supf_n(i); %final demand in country n (from fd final demand sector) for product sec by country
         j = j + 1;
     end
 end
@@ -150,40 +152,4 @@ finalee = sum(supfinalee,2)';
 supinteree = Z((port-1)*kTOT + all_sec, (port-1)*kTOT + ee_ind);
 interee = sum(supinteree,1);
 %searching for imports
-importee = Z((port-1)*kTOT + ee_ind, (port-1)*kTOT + ee_ind);
-
-
-
-%% WORLD I/O
-%More interesting! Calculate a world I/O (in order to have an idea of gross
-%relationship, regardless of commercial relationship between states)
-
-Zaggr = zeros(kTOT,kTOT);
-faggr = zeros(kTOT,fTOT);
-Baggr = zeros(trTOT,kTOT);
-vaggr = zeros(fTOT,kTOT);
-
-for i=1:kTOT
-    for j=1:kTOT
-        for port=1:nTOT
-            
-            if i<trTOT+1
-                Baggr(i,j)= Baggr(i,j) + B(i,(port-1)*trTOT + j);
-            end
-            
-            if i<fTOT+1
-                vaggr(i,j)= vaggr(i,j) + v(i,(port-1)*fTOT + j);
-            end
-            
-            for spain=1:nTOT
-            
-                if j<fTOT+1
-                    faggr(i,j)= faggr(i,j) + f((port-1)*kTOT + i,(spain-1)*fTOT + j);
-                end
-                
-                Zaggr(i,j)=Zaggr(i,j) + Z((port-1)*kTOT + i,(spain-1)*kTOT + j);
-                
-            end
-        end
-    end
-end
+importee = Z((port-1)*kTOT + ee_ind, (spain-1)*kTOT + ee_ind);
