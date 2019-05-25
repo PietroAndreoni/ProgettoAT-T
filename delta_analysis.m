@@ -9,7 +9,7 @@ global nTOT kTOT fTOT trTOT vTOT
 
 for i=1:size(Dmat,1)
     for j=1:size(Dmat,2)
-        if Dmat(i,j) <= tol
+        if abs(Dmat(i,j)) <= tol
             Dmat(i,j) = 0;
         end
     end
