@@ -19,7 +19,7 @@ end
 infos = [a b];
 
 if n1 ~= 0
-    country1 = fix( a./kTOT ) + 1;
+    country1 = fix( a./kTOT ) + 1; % + 1 is necessary to access correct country
     sec1 = mod( a,kTOT);
     infos = [infos country1 sec1];  
 end

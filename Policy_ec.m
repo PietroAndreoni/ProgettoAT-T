@@ -132,13 +132,13 @@ f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f((port-1)*kTOT + costr,(port-1)*f
 % increase in demand for electric cars for these countries
 % france import batteries from poland, germany from hungary and UK self
 % produces
-Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat; %increase in battery demand from transport sector
+Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec; %increase in battery demand from transport sector
 Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit; %increase in litium demand from battery sector
 
-Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat;
+Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec;
 Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit;
 
-Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat;
+Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec;
 Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit;
 
 %technology change due to charging stations costruction ?
@@ -180,7 +180,7 @@ f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f((port-1)*kTOT + costr,(port-1)*
 
 A1 = Z1 * inv(diag(x+0.0001));
 B1 = B;
-L1 = inv(diag(ones(size(A,1),1))-A1);
+L1 = inv(diag(ones(size(A1,1),1))-A1);
 x1 = L*f1;
 
 f_tot1=zeros(nTOT*kTOT,1);
@@ -191,10 +191,29 @@ end
 R1 = B1* ( diag(L1*f_tot1) );
 E1 = (B1*L1) * diag(f_tot1);
 
-DA = A - A1;
-DR = B - R1;
-DE = E - E1;
+DZ = Z1 - Z;
+Df = f1 - f;
+DB = B1 - B;
+DA = A1 - A;
+DR = R1 - R;
+DE = E1 - E;
+Dv = v1 - v;
 
 %% Result analysis
-info = delta_analysis(DR,1000,0,1);
 
+info = delta_analysis(DE,1000,0,1);
+[DZaggr_sec,DAaggr_sec,Dfaggr_sec,DBaggr_sec,DRaggr_sec,DEaggr_sec,Dvaggr_sec] = aggrbysec (DZ,DA,Df,DB,DR,DE,Dv);
+[DZaggr_co,DAaggr_co,Dfaggr_co,DBaggr_co,DRaggr_co,DEaggr_co,Dvaggr_co] = aggrbycountry (DZ,DA,Df,DB,DR,DE,Dv);
+
+
+Zsupp = zeros(7824,7824);
+for i=1:size(Z1,1)
+    for j=1:size(Z1,2)
+        
+        if Z1(i,j) < 0
+            Zsupp(i,j) = 1;
+        else
+            Zsupp(i,j) = 0;
+        end
+    end
+end

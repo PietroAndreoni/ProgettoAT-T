@@ -1,10 +1,11 @@
-function [Zaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbycountry(Z,f,B,R,E,v)
+function [Zaggr,Aaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbycountry(Z,A,f,B,R,E,v)
 %AGGRBYCOUNTRY Create a country I/O with all sectors aggregated
 %   Requires dimensions defined as global variables
 %   Requires all input insertion
 
 global nTOT kTOT fTOT trTOT vTOT
 
+%{
 if size(Z,1) ~= size(Z,2) || size(Z,1)  ~= kTOT*nTOT
     disp("(at least) matrix A is incorrect in size (square matrix required)")
     return
@@ -24,13 +25,15 @@ if size(v,2) ~= size(Z,1) || size(v,2) ~= vTOT
         disp("matrix v is incorrect in size")
     return
 end    
+%}
 
-Zaggr = zeros(kTOT,kTOT);
-faggr = zeros(kTOT,fTOT);
-Baggr = zeros(trTOT,kTOT);
-Raggr = zeros(trTOT,kTOT);
-Eaggr = zeros(trTOT,kTOT);
-vaggr = zeros(fTOT,kTOT);
+Zaggr = zeros(nTOT,nTOT);
+Aaggr = zeros(nTOT,nTOT);
+faggr = zeros(nTOT,nTOT);
+Baggr = zeros(trTOT,nTOT);
+Raggr = zeros(trTOT,nTOT);
+Eaggr = zeros(trTOT,nTOT);
+vaggr = zeros(fTOT,nTOT);
 
 for n1=1:nTOT
     for n2=1:nTOT
@@ -38,6 +41,7 @@ for n1=1:nTOT
             for j=1:kTOT
                 
                 Zaggr(n1,n2) = Zaggr(n1,n2) + Z((n1-1)*kTOT + i, (n2-1)*kTOT + j);
+                Aaggr(n1,n2) = Aaggr(n1,n2) + A((n1-1)*kTOT + i, (n2-1)*kTOT + j);
                 
                 if j < fTOT+1
                     faggr(n1,n2) = faggr(n1,n2) + f((n1-1)*kTOT + i, (n2-1)*fTOT + j);

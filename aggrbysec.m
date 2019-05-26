@@ -1,10 +1,11 @@
-function [Zaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbysec(Z,f,B,R,E,v)
+function [Zaggr,Aaggr,faggr,Baggr,Raggr,Eaggr,vaggr] = aggrbysec(Z,A,f,B,R,E,v)
 %AGGRBYSEC Create a world I/O by sector
 %   Requires dimensions defined as global variables
 %   Requires all input insertion
 
 global nTOT kTOT fTOT trTOT vTOT
 
+%{
 if size(Z,1) ~= size(Z,2) || size(Z,1)  ~= kTOT*nTOT
     disp("(at least) matrix A is incorrect in size (square matrix required)")
     return
@@ -23,9 +24,11 @@ end
 if size(v,2) ~= size(Z,1) || size(v,2) ~= vTOT
         disp("matrix v is incorrect in size")
     return
-end    
+end   
+%}
 
 Zaggr = zeros(kTOT,kTOT);
+Aaggr = zeros(kTOT,kTOT);
 faggr = zeros(kTOT,fTOT);
 Baggr = zeros(trTOT,kTOT);
 Raggr = zeros(trTOT,kTOT);
@@ -53,6 +56,7 @@ for i=1:kTOT
                 end
                 
                 Zaggr(i,j)=Zaggr(i,j) + Z((n1-1)*kTOT + i,(n2-1)*kTOT + j);
+                Aaggr(i,j)=Aaggr(i,j) + A((n1-1)*kTOT + i,(n2-1)*kTOT + j);
                 
             end
         end

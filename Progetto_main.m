@@ -16,7 +16,7 @@ vTOT = 7;
 L = inv(diag(ones(size(A,1),1))-A);
 x0 = L*f;
 x = sum(x0,2);
-Z = A*diag(x);
+Z = A*diag(x+0.0001);
 
 %calculate aggregate final demand for sector i in country A
 f_tot=zeros(nTOT*kTOT,1);
