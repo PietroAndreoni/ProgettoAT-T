@@ -76,7 +76,6 @@ h = 1;
 g = 3;
 
 %matrixes for the policy
-A1 = A;
 f1 = f;
 B1 = B;
 v1 = v;
@@ -97,9 +96,9 @@ macheq_sharew = 0.3;
 
 % final demand investment increase associated to electric car purchase by
 % households (bought from France, Germany and UK)
-f1((france-1)*kTOT + tr,(port-1)*fTOT + h) = f((france-1)*kTOT + tr,(port-1)*fTOT + h) + fr_share*totinv_h;
-f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) = f((germany-1)*kTOT + tr,(port-1)*fTOT + h) + ger_share*totinv_h;
-f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) = f((UK-1)*kTOT + tr,(port-1)*fTOT + h) + UK_share*totinv_h;
+f1((france-1)*kTOT + tr,(port-1)*fTOT + h) = f1((france-1)*kTOT + tr,(port-1)*fTOT + h) + fr_share*totinv_h;
+f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) = f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) + ger_share*totinv_h;
+f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) = f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) + UK_share*totinv_h;
 
 %final demand decrease associated to less electric car purchase by
 %households (uniformly divided respecting actual import share)
@@ -116,30 +115,30 @@ end
 finaltransa = supfinaltransa/sum(supfinaltransa);
 
 for n=1:nTOT
-f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*target_ec;
+f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*target_ec;
 end
 
-
+%PORCODDIO!!!!!
 
 %final demand investment by government due to installation of charging
-%station (electrical components are assumed to be bought in Portugal)
+%station (electrical compon-ents are assumed to be bought in Portugal)
 %cost is assumed to be splitted into 70% costruction, 30% electric
 %components
-f1((port-1)*kTOT + elman,(port-1)*fTOT + g) = f((port-1)*kTOT + elman,(port-1)*fTOT + g) + costr_sharecs*totinv_g;
-f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f((port-1)*kTOT + costr,(port-1)*fTOT + g) + elmac_sharecs*totinv_g;
+f1((port-1)*kTOT + elman,(port-1)*fTOT + g) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g) + costr_sharecs*totinv_g;
+f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g) + elmac_sharecs*totinv_g;
 
 % technology change due to transformation of transport sector caused by
 % increase in demand for electric cars for these countries
 % france import batteries from poland, germany from hungary and UK self
 % produces
-Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec; %increase in battery demand from transport sector
-Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit; %increase in litium demand from battery sector
+Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec; %increase in battery demand from transport sector
+Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit; %increase in litium demand from battery sector
 
-Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec;
-Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit;
+Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec;
+Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit;
 
-Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec;
-Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit;
+Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec;
+Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit;
 
 %technology change due to charging stations costruction ?
 
@@ -158,38 +157,38 @@ end
 finalrefp = supfinalrefp/sum(supfinalrefp);
 
 for n=1:nTOT
-f1((n-1)*kTOT + ffref,(port-1)*fTOT + h ) = f((n-1)*kTOT + ffref,(port-1)*fTOT + h ) - finalrefp(n)*dem_ff;
+f1((n-1)*kTOT + ffref,(port-1)*fTOT + h ) = f1((n-1)*kTOT + ffref,(port-1)*fTOT + h ) - finalrefp(n)*dem_ff;
 end
 
 %% electricity: SCENARIO 1
 %increase in electricity demand covered by programmable plants (biomass)
-f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) = f((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
+f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) = f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
 
 %% electricity: SCENARIO 2
 %increase in total demand is supported by added capacity in wind 
-f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) = f((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
+f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) = f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
 
 %investment for plants costruction (fix proportions)
-f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) = f((port-1)*kTOT + macheq,(port-1)*fTOT + g ) + macheq_sharew*totinv_wind;
-f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f((port-1)*kTOT + costr,(port-1)*fTOT + g ) + costr_sharew*totinv_wind;
+f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) = f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) + macheq_sharew*totinv_wind;
+f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) + costr_sharew*totinv_wind;
 
 %% electricity: SCENARIO 3 
 %extra demand is covered with import via Spain
 
 %% Result calculations
-
-A1 = Z1 * inv(diag(x+0.0001));
-B1 = B;
+xnon = diag(x+0.0001);
+A1 = Z1 / xnon;
+Lnon1 = diag(ones(size(A1,1),1))-A1;
 L1 = inv(diag(ones(size(A1,1),1))-A1);
-x1 = L*f1;
+x1 = Lnon1\f1;
 
 f_tot1=zeros(nTOT*kTOT,1);
 for i = 1:nTOT*kTOT
     f_tot1(i) = sum( f1(i,:) );
 end
 
-R1 = B1* ( diag(L1*f_tot1) );
-E1 = (B1*L1) * diag(f_tot1);
+R1 = B1* ( diag(Lnon1\f_tot1) );
+E1 = (B1/Lnon1) * diag(f_tot1);
 
 DZ = Z1 - Z;
 Df = f1 - f;
@@ -201,19 +200,17 @@ Dv = v1 - v;
 
 %% Result analysis
 
-info = delta_analysis(DE,1000,0,1);
+info = delta_analysis(f,1000,1,1);
 [DZaggr_sec,DAaggr_sec,Dfaggr_sec,DBaggr_sec,DRaggr_sec,DEaggr_sec,Dvaggr_sec] = aggrbysec (DZ,DA,Df,DB,DR,DE,Dv);
 [DZaggr_co,DAaggr_co,Dfaggr_co,DBaggr_co,DRaggr_co,DEaggr_co,Dvaggr_co] = aggrbycountry (DZ,DA,Df,DB,DR,DE,Dv);
 
 
-Zsupp = zeros(7824,7824);
-for i=1:size(Z1,1)
-    for j=1:size(Z1,2)
+fsupp = zeros(7824,366);
+for i=1:size(Df,1)
+    for j=1:size(Df,2)
         
-        if Z1(i,j) < 0
-            Zsupp(i,j) = 1;
-        else
-            Zsupp(i,j) = 0;
+        if Df(i,j) < 0 
+            fsupp(i,j) = 1;
         end
     end
 end

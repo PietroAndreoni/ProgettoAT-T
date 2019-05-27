@@ -40,9 +40,9 @@ for i=1:kTOT
         for n1=1:nTOT
             
             if i<trTOT+1
-                Baggr(i,j)= Baggr(i,j) + B(i,(n1-1)*trTOT + j);
-                Raggr(i,j)= Raggr(i,j) + R(i,(n1-1)*trTOT + j);
-                Eaggr(i,j)= Eaggr(i,j) + E(i,(n1-1)*trTOT + j);              
+                Baggr(i,j)= Baggr(i,j) + B(i,(n1-1)*kTOT + j);
+                Raggr(i,j)= Raggr(i,j) + R(i,(n1-1)*kTOT + j);
+                Eaggr(i,j)= Eaggr(i,j) + E(i,(n1-1)*kTOT + j);              
             end
             
             if i<fTOT+1

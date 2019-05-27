@@ -47,16 +47,20 @@ for n1=1:nTOT
                     faggr(n1,n2) = faggr(n1,n2) + f((n1-1)*kTOT + i, (n2-1)*fTOT + j);
                 end
                 
+                if n1 == 1
+                    
                 if i < trTOT+1
-                    Baggr(i,n2) = Baggr(i,n2) + B(i, (n2-1)*trTOT + j);                   
-                    Raggr(i,n2) = Raggr(i,n2) + R(i, (n2-1)*trTOT + j);             
-                    Eaggr(i,n2) = Eaggr(i,n2) + E(i, (n2-1)*trTOT + j);
+                    Baggr(i,n2) = Baggr(i,n2) + B(i, (n2-1)*kTOT + j);                   
+                    Raggr(i,n2) = Raggr(i,n2) + R(i, (n2-1)*kTOT + j);             
+                    Eaggr(i,n2) = Eaggr(i,n2) + E(i, (n2-1)*kTOT + j);
                     
                 end
                 
                 if i < vTOT+1
                     vaggr(i,n2) = vaggr(i,n2) + v(i, (n2-1)*vTOT + j);
                 end 
+                
+                end
                 
             end
         end

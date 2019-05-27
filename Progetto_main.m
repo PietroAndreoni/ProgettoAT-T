@@ -14,7 +14,8 @@ vTOT = 7;
 
 %calculate Leontieff coefficients matrix and overall production
 L = inv(diag(ones(size(A,1),1))-A);
-x0 = L*f;
+Lnon = diag(ones(size(A,1),1))-A;
+x0 = Lnon\f;
 x = sum(x0,2);
 Z = A*diag(x+0.0001);
 
@@ -25,8 +26,8 @@ for i = 1:nTOT*kTOT
 end
 
 %calculate exogenous transaction matrix and embodied resource matrix
-R = B* ( diag(L*f_tot) );
-E = (B*L) * diag(f_tot);
+R = B* ( diag(Lnon\f_tot) );
+E = (B/Lnon) * diag(f_tot);
 
 %% Some extra calculations about final demand
 
