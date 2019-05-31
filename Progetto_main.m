@@ -29,6 +29,21 @@ end
 R = B* ( diag(Lnon\f_tot) );
 E = (B/Lnon) * diag(f_tot);
 
+%% Update the energy mix
+port = 22; 
+
+total_prod = sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ) ); 
+share_new = [0.23, 0.125, 0, 0.3, 0.233, 0.032, 0.064, 0.012, 0, 0, 0.004, 0];
+
+for fin = 1:7
+    for el = 96:107
+        f( (port-1)*kTOT + el, (port-1)*fTOT + fin ) =  share_new(el-95)*total_prod(fin);
+    end
+end
+
+clear el fin;
+
+
 %% Some extra calculations about final demand
 
 %calculate aggregate final demand for sector i in country A FROM country B

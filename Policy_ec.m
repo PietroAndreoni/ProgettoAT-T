@@ -1,6 +1,8 @@
 %% data
 global nTOT kTOT fTOT trTOT vTOT
 
+count = 0;
+
 target_ec = 75000;  %target for electric car penetration
 avcost_ec = 0.04;   %average cost of electric cars (in M€)
 ref_ec = 0;         %electric cars circulating in reference year
@@ -16,7 +18,7 @@ aveff_nec = 7.5;    %average efficiency for non electric cars in l/100km
 avdist = 14000;     %average distance routed in a year
 
 price_ff = 0.00000148;   %average substitute fuels price (gasoline+gas) in M€/l
-price_ee = 0.000003;     %average price of electricity in M€/kW
+price_ee = 0.0000003;    %average price of electricity in M€/kW
 
 motmet = 0;          %iron and hard metals necessary for building an engine
 price_ir = 0;        %price of iron
@@ -24,20 +26,22 @@ price_ir = 0;        %price of iron
 litbat = 14;          %litium necessary to build a - kW car battery in kg
 price_lit = 0.00002;  %price of litium in M€/kg
 
-price_bat = 0.006227; %battery price    
+price_bat = 0.006227; %battery price  
+
+av_age = 12;          %average useful life of an electric car 
 
 %% calculations
 
 totinv_h = (target_ec - ref_ec) * avcost_ec;
 totinv_g = ( (target_ec - ref_ec) / 1000 * chargdiff - ref_charg) * chargcost;
-totinv_wind = 0;
+totinv_wind = 95.56;
 dem_ff = (target_ec - ref_ec) * avdist /100 * aveff_nec * price_ff;
 dem_ee = (target_ec - ref_ec) * avdist /100 * aveff_ec * price_ee;
 dem_ir = (target_ec - ref_ec) * motmet * price_ir;
 dem_lit = (target_ec - ref_ec) * litbat * price_lit;
 
 
-%% implementation
+%% other data and parameters
 %useful indexes: countries
 port = 22; 
 spain = 9;
@@ -91,8 +95,13 @@ costr_sharecs = 0.6;
 elmac_sharecs = 0.4;
 
 %investment share for wind turbines
-costr_sharew = 0.7;
-macheq_sharew = 0.3;
+costr_sharew = 0.1;
+macheq_sharew = 0.77;
+elmac_sharew = 0.13;
+
+
+%% UNA TANTUM investments (to be divided for the useful life of the product)
+count = count +1;
 
 % final demand investment increase associated to electric car purchase by
 % households (bought from France, Germany and UK)
@@ -118,8 +127,6 @@ for n=1:nTOT
 f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*target_ec;
 end
 
-%PORCODDIO!!!!!
-
 %final demand investment by government due to installation of charging
 %station (electrical compon-ents are assumed to be bought in Portugal)
 %cost is assumed to be splitted into 70% costruction, 30% electric
@@ -127,6 +134,8 @@ end
 f1((port-1)*kTOT + elman,(port-1)*fTOT + g) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g) + costr_sharecs*totinv_g;
 f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g) + elmac_sharecs*totinv_g;
 
+%% technology changes
+count = count +1;
 % technology change due to transformation of transport sector caused by
 % increase in demand for electric cars for these countries
 % france import batteries from poland, germany from hungary and UK self
@@ -140,8 +149,8 @@ Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (hungary-1)*kTO
 Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec;
 Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit;
 
-%technology change due to charging stations costruction ?
-
+%% annual demand shock (not to be divided for useful life)
+count = count +1;
 %demand shift from fossil fuel to electricity
 %decrease in fossil fuel demand
 supf_p = f(:,(port-1)*fTOT + h); 
@@ -161,19 +170,29 @@ f1((n-1)*kTOT + ffref,(port-1)*fTOT + h ) = f1((n-1)*kTOT + ffref,(port-1)*fTOT 
 end
 
 %% electricity: SCENARIO 1
+count = count +1;
 %increase in electricity demand covered by programmable plants (biomass)
 f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) = f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
 
 %% electricity: SCENARIO 2
+count = count +1;
 %increase in total demand is supported by added capacity in wind 
-f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) = f1((port-1)*kTOT + biomass,(port-1)*fTOT + h ) + dem_ee;
+f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) = f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) + dem_ee;
 
 %investment for plants costruction (fix proportions)
 f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) = f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) + macheq_sharew*totinv_wind;
 f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) + costr_sharew*totinv_wind;
+f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) + elmac_sharew*totinv_wind;
 
 %% electricity: SCENARIO 3 
-%extra demand is covered with import via Spain
+count = count +1;
+%extra demand is covered omogenously by the existing mix
+ttotal_prod = sum ( sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ) ) ); 
+share_prod = sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ), 2) ./ ttotal_prod;
+
+for i=96:107
+    f1((port-1)*kTOT + i,(port-1)*fTOT + h ) = f1((port-1)*kTOT + i,(port-1)*fTOT + h ) + share_prod(n)*dem_ee;
+end
 
 %% Result calculations
 xnon = diag(x+0.0001);
@@ -214,3 +233,18 @@ for i=1:size(Df,1)
         end
     end
 end
+
+xlswrite("resultbio.xlsx",DA,'DA');
+xlswrite("resultbio.xlsx",DAaggr_co,'DAco');
+xlswrite("resultbio.xlsx",DAaggr_sec,'DAsec');
+
+xlswrite("resultw.xlsx",DE,'DE');
+xlswrite("resultw.xlsx",DEaggr_co,'DEco');
+xlswrite("resultw.xlsx",DEaggr_sec,'DEsec');
+
+xlswrite("resultw.xlsx",DR,'DA');
+xlswrite("resultw.xlsx",DRaggr_co,'DRco');
+xlswrite("resultw.xlsx",DRaggr_sec,'DRsec');
+
+%% 
+
