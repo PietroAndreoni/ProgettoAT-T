@@ -1,47 +1,45 @@
-%% data
 global nTOT kTOT fTOT trTOT vTOT
+load("Baseline.mat");
+
+%% data
 
 count = 0;
 
 target_ec = 75000;  %target for electric car penetration
-avcost_ec = 0.04;   %average cost of electric cars (in M€)
+dummy = 1;         % if target=750000(all years) dummy = 10, else dummy = 1
+avcost_ec = 0.018;  %average cost of electric cars (in M€)
 ref_ec = 0;         %electric cars circulating in reference year
 
-avcost_nec = 0.015;
+avcost_nec = 0.018;
 
 chargdiff = 6;      %number of charging station per 1000 vehicles (source: https://www.sciencedirect.com/science/article/pii/S1361920917305643)
 chargcost = 0.03;   %cost of a single charging station (in M€)
 ref_charg = 0;      %charging stations operating in reference year
 
-aveff_ec = 17.9;    %average efficiency for electric cars in kW/100km
+aveff_ec = 17.9;    %average efficiency for electric cars in kWh/100km
 aveff_nec = 7.5;    %average efficiency for non electric cars in l/100km
 avdist = 14000;     %average distance routed in a year
 
 price_ff = 0.00000148;   %average substitute fuels price (gasoline+gas) in M€/l
-price_ee = 0.0000003;    %average price of electricity in M€/kW
-
-motmet = 0;          %iron and hard metals necessary for building an engine
-price_ir = 0;        %price of iron
+price_ee = 0.00000025;    %average price of electricity in M€/kWh
 
 litbat = 14;          %litium necessary to build a - kW car battery in kg
 price_lit = 0.00002;  %price of litium in M€/kg
 
 price_bat = 0.006227; %battery price  
 
-av_age = 12;          %average useful life of an electric car 
-
-%% calculations
+av_ageec = 12;          %average useful life of an electric car 
+av_agenec = 12;          %average useful life of non electric car 
+av_agecc = 25;          %average useful life of a charging station
+av_agew = 30;           %average useful life of a wind farm
 
 totinv_h = (target_ec - ref_ec) * avcost_ec;
 totinv_g = ( (target_ec - ref_ec) / 1000 * chargdiff - ref_charg) * chargcost;
 totinv_wind = 95.56;
 dem_ff = (target_ec - ref_ec) * avdist /100 * aveff_nec * price_ff;
 dem_ee = (target_ec - ref_ec) * avdist /100 * aveff_ec * price_ee;
-dem_ir = (target_ec - ref_ec) * motmet * price_ir;
 dem_lit = (target_ec - ref_ec) * litbat * price_lit;
 
-
-%% other data and parameters
 %useful indexes: countries
 port = 22; 
 spain = 9;
@@ -105,11 +103,11 @@ count = count +1;
 
 % final demand investment increase associated to electric car purchase by
 % households (bought from France, Germany and UK)
-f1((france-1)*kTOT + tr,(port-1)*fTOT + h) = f1((france-1)*kTOT + tr,(port-1)*fTOT + h) + fr_share*totinv_h;
-f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) = f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) + ger_share*totinv_h;
-f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) = f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) + UK_share*totinv_h;
+f1((france-1)*kTOT + tr,(port-1)*fTOT + h) = f1((france-1)*kTOT + tr,(port-1)*fTOT + h) + fr_share*totinv_h/av_ageec;
+f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) = f1((germany-1)*kTOT + tr,(port-1)*fTOT + h) + ger_share*totinv_h/av_ageec;
+f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) = f1((UK-1)*kTOT + tr,(port-1)*fTOT + h) + UK_share*totinv_h/av_ageec;
 
-%final demand decrease associated to less electric car purchase by
+%final demand decrease associated to less non electric car purchase by
 %households (uniformly divided respecting actual import share)
 supf_a = f(:,(port-1)*fTOT + h); 
 
@@ -124,15 +122,17 @@ end
 finaltransa = supfinaltransa/sum(supfinaltransa);
 
 for n=1:nTOT
-f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*target_ec;
+f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*(target_ec-ref_ec)/av_agenec;
 end
+
+f1(((1:48)-1)*kTOT + tr,(port-1)*fTOT + h );
 
 %final demand investment by government due to installation of charging
 %station (electrical compon-ents are assumed to be bought in Portugal)
 %cost is assumed to be splitted into 70% costruction, 30% electric
 %components
-f1((port-1)*kTOT + elman,(port-1)*fTOT + g) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g) + costr_sharecs*totinv_g;
-f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g) + elmac_sharecs*totinv_g;
+f1((port-1)*kTOT + elman,(port-1)*fTOT + g) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g) + costr_sharecs*totinv_g/av_agecc;
+f1((port-1)*kTOT + costr,(port-1)*fTOT + g) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g) + elmac_sharecs*totinv_g/av_agecc;
 
 %% technology changes
 count = count +1;
@@ -140,17 +140,17 @@ count = count +1;
 % increase in demand for electric cars for these countries
 % france import batteries from poland, germany from hungary and UK self
 % produces
-Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec; %increase in battery demand from transport sector
-Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit; %increase in litium demand from battery sector
+Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec/dummy; %increase in battery demand from transport sector
+Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit/dummy; %increase in litium demand from battery sector
 
-Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec;
-Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit;
+Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec/dummy;
+Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit/dummy;
 
-Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec;
-Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit;
+Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec/dummy;
+Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit/dummy;
 
 %% annual demand shock (not to be divided for useful life)
-count = count +1;
+count = count +1; 
 %demand shift from fossil fuel to electricity
 %decrease in fossil fuel demand
 supf_p = f(:,(port-1)*fTOT + h); 
@@ -180,18 +180,18 @@ count = count +1;
 f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) = f1((port-1)*kTOT + wind,(port-1)*fTOT + h ) + dem_ee;
 
 %investment for plants costruction (fix proportions)
-f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) = f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) + macheq_sharew*totinv_wind;
-f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) + costr_sharew*totinv_wind;
-f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) + elmac_sharew*totinv_wind;
+f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) = f1((port-1)*kTOT + macheq,(port-1)*fTOT + g ) + macheq_sharew*totinv_wind/av_agew;
+f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) = f1((port-1)*kTOT + costr,(port-1)*fTOT + g ) + costr_sharew*totinv_wind/av_agew;
+f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) = f1((port-1)*kTOT + elman,(port-1)*fTOT + g ) + elmac_sharew*totinv_wind/av_agew;
 
 %% electricity: SCENARIO 3 
 count = count +1;
 %extra demand is covered omogenously by the existing mix
-ttotal_prod = sum ( sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ) ) ); 
-share_prod = sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ), 2) ./ ttotal_prod;
+ttotal_prod = sum( f1( (port-1)*kTOT + (96:107), (port-1)*fTOT + h ) ) ; 
+share_prod = f1( (port-1)*kTOT + (96:107), (port-1)*fTOT + h ) ./ ttotal_prod;
 
 for i=96:107
-    f1((port-1)*kTOT + i,(port-1)*fTOT + h ) = f1((port-1)*kTOT + i,(port-1)*fTOT + h ) + share_prod(n)*dem_ee;
+    f1((port-1)*kTOT + i,(port-1)*fTOT + h ) = f1((port-1)*kTOT + i,(port-1)*fTOT + h ) + share_prod(i-95)*dem_ee;
 end
 
 %% Result calculations
@@ -223,6 +223,8 @@ info = delta_analysis(f,1000,1,1);
 [DZaggr_sec,DAaggr_sec,Dfaggr_sec,DBaggr_sec,DRaggr_sec,DEaggr_sec,Dvaggr_sec] = aggrbysec (DZ,DA,Df,DB,DR,DE,Dv);
 [DZaggr_co,DAaggr_co,Dfaggr_co,DBaggr_co,DRaggr_co,DEaggr_co,Dvaggr_co] = aggrbycountry (DZ,DA,Df,DB,DR,DE,Dv);
 
+[Zaggr_co,Aaggr_co,faggr_co,Baggr_co,Raggr_co,Eaggr_co,vaggr_co] = aggrbycountry (Z1,A1,f1,B1,R1,E1,v1);
+[Zaggr_sec,Aaggr_sec,faggr_sec,Baggr_sec,Raggr_sec,Eaggr_sec,vaggr_sec] = aggrbysec (Z1,A1,f1,B1,R1,E1,v1);
 
 fsupp = zeros(7824,366);
 for i=1:size(Df,1)
@@ -238,13 +240,11 @@ xlswrite("resultbio.xlsx",DA,'DA');
 xlswrite("resultbio.xlsx",DAaggr_co,'DAco');
 xlswrite("resultbio.xlsx",DAaggr_sec,'DAsec');
 
-xlswrite("resultw.xlsx",DE,'DE');
-xlswrite("resultw.xlsx",DEaggr_co,'DEco');
-xlswrite("resultw.xlsx",DEaggr_sec,'DEsec');
+xlswrite("resultmixnewnoUK.xlsx",DE,'DE');
+xlswrite("resultmixnewnoUK.xlsx",DEaggr_co,'DEco');
+xlswrite("resultmixnewnoUK.xlsx",DEaggr_sec,'DEsec');
 
-xlswrite("resultw.xlsx",DR,'DA');
-xlswrite("resultw.xlsx",DRaggr_co,'DRco');
-xlswrite("resultw.xlsx",DRaggr_sec,'DRsec');
-
-%% 
+xlswrite("resultmixnewnoUK.xlsx",DR,'DR');
+xlswrite("resultmixnewnoUK.xlsx",DRaggr_co,'DRco');
+xlswrite("resultmixnewnoUK.xlsx",DRaggr_sec,'DRsec');
 

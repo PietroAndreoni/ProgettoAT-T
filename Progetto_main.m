@@ -12,6 +12,26 @@ fTOT = 7;
 trTOT = 12;
 vTOT = 7;
 
+%%
+port = 22; 
+
+total_prod = sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + 1 )); 
+share_new = [0.23, 0.125, 0, 0.3, 0.233, 0.032, 0.064, 0.012, 0, 0, 0.004, 0];
+
+for el = 96:107
+    f( (port-1)*kTOT + el, (port-1)*fTOT + 1 ) =  share_new(el-95)*total_prod;
+end
+
+%wip
+a = sum ( Z ( :, (UK-1)*fTOT + (96:107) ), 1);
+tot = sum (a);
+share = a/tot;
+
+a = sum ( sum( Z,1));
+b = sum ( sum( Z,2));
+
+clear el;
+%%
 %calculate Leontieff coefficients matrix and overall production
 L = inv(diag(ones(size(A,1),1))-A);
 Lnon = diag(ones(size(A,1),1))-A;
@@ -28,21 +48,7 @@ end
 %calculate exogenous transaction matrix and embodied resource matrix
 R = B* ( diag(Lnon\f_tot) );
 E = (B/Lnon) * diag(f_tot);
-
-%% Update the energy mix
-port = 22; 
-
-total_prod = sum( f( (port-1)*kTOT + (96:107), (port-1)*fTOT + (1:7) ) ); 
-share_new = [0.23, 0.125, 0, 0.3, 0.233, 0.032, 0.064, 0.012, 0, 0, 0.004, 0];
-
-for fin = 1:7
-    for el = 96:107
-        f( (port-1)*kTOT + el, (port-1)*fTOT + fin ) =  share_new(el-95)*total_prod(fin);
-    end
-end
-
-clear el fin;
-
+ 
 
 %% Some extra calculations about final demand
 
@@ -125,7 +131,7 @@ f_tot (index1)
 %% other calculations and support informations
 %index values for portugal, trasport sector and households demand
 n = 22;
-sec = 57;
+sec = 91;
 fd = 1; 
 
 

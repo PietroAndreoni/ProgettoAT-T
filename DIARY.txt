@@ -9,3 +9,24 @@ CODE DIARY
 OTHERS
 
 -----------
+
+assumption in paper LIFE = 150.000km
+
+gc02eq/km = 352 from coal burning
+
+from EV = 0.6*from coal burning (nel mix europeo medio)
+
+from ICEV cca 0.75*from coal burning
+
+ie delta = 0.15*coal burning
+
+
+352*.15 = 52.8 gC02eq/km
+
+ans*14000km /1000 = 739kgc02eq/veicolo
+
+ans*75000/10^6 = 55.4 ktonC02eq evitate con 75000 veicoli lungo la loro vita utile 
+
+nostro valore 
+
+
