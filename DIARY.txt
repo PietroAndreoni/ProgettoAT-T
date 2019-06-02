@@ -23,10 +23,16 @@ ie delta = 0.15*coal burning
 
 352*.15 = 52.8 gC02eq/km
 
-ans*14000km /1000 = 739kgc02eq/veicolo
+ans*14000km /1000 = 739kgc02eq/veicoloanno
 
-ans*75000/10^6 = 55.4 ktonC02eq evitate con 75000 veicoli lungo la loro vita utile 
+ans*75000/10^6 = 55.4 ktonC02eq evitate con 75000 veicoli all'anno
 
 nostro valore 
 
+
+Prezzo batteria per kWh = 100€ 
+
+Batteria media = 30 kWh
+
+1 kg per kWh di batteria
 

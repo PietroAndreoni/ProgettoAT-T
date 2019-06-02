@@ -23,15 +23,15 @@ avdist = 14000;     %average distance routed in a year
 price_ff = 0.00000148;   %average substitute fuels price (gasoline+gas) in M€/l
 price_ee = 0.00000025;    %average price of electricity in M€/kWh
 
-litbat = 14;          %litium necessary to build a - kW car battery in kg
+litbat = 30;          %litium necessary to build a 30 kWh car battery in kg (1kg/kWh)
 price_lit = 0.00002;  %price of litium in M€/kg
 
-price_bat = 0.006227; %battery price  
+price_bat = 0.003; %battery price (30 KWh) assuming a target price of 100€/kWh - ie perfect competitivity 
 
 av_ageec = 12;          %average useful life of an electric car 
 av_agenec = 12;          %average useful life of non electric car 
 av_agecc = 25;          %average useful life of a charging station
-av_agew = 30;           %average useful life of a wind farm
+av_agew = 20;           %average useful life of a wind farm
 
 totinv_h = (target_ec - ref_ec) * avcost_ec;
 totinv_g = ( (target_ec - ref_ec) / 1000 * chargdiff - ref_charg) * chargcost;
@@ -114,7 +114,7 @@ supf_a = f(:,(port-1)*fTOT + h);
 j = 1;
 for i=1:kTOT*nTOT
     if mod(i-tr,kTOT) == 0
-        supfinaltransa(j) = supf_a(i); %final demand (from fd final demand sector) for sec product from all countries in country n
+        supfinaltransa(j) = supf_a(i); 
         j = j + 1;
     end
 end
@@ -124,8 +124,6 @@ finaltransa = supfinaltransa/sum(supfinaltransa);
 for n=1:nTOT
 f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) = f1((n-1)*kTOT + tr,(port-1)*fTOT + h ) - finaltransa(n)*avcost_nec*(target_ec-ref_ec)/av_agenec;
 end
-
-f1(((1:48)-1)*kTOT + tr,(port-1)*fTOT + h );
 
 %final demand investment by government due to installation of charging
 %station (electrical compon-ents are assumed to be bought in Portugal)
@@ -140,14 +138,14 @@ count = count +1;
 % increase in demand for electric cars for these countries
 % france import batteries from poland, germany from hungary and UK self
 % produces
-Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) = Z1( (france-1)*kTOT + tr, (poland-1)*kTOT + elman ) + fr_share*price_bat*target_ec/dummy; %increase in battery demand from transport sector
-Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (poland-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + fr_share*dem_lit/dummy; %increase in litium demand from battery sector
+Z1( (poland-1)*kTOT + elman, (france-1)*kTOT + tr  ) = Z1( (poland-1)*kTOT + elman, (france-1)*kTOT + tr ) + fr_share*price_bat*target_ec/dummy; %increase in battery demand from transport sector
+Z1( (southam-1)*kTOT + nmet_dir, (poland-1)*kTOT + elman ) = Z1( (southam-1)*kTOT + nmet_dir, (poland-1)*kTOT + elman ) + fr_share*dem_lit/dummy; %increase in litium demand from battery sector
 
-Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) = Z1( (germany-1)*kTOT + tr, (hungary-1)*kTOT + elman ) + ger_share*price_bat*target_ec/dummy;
-Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (hungary-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + ger_share*dem_lit/dummy;
+Z1( (hungary-1)*kTOT + elman, (germany-1)*kTOT + tr ) = Z1( (hungary-1)*kTOT + elman, (germany-1)*kTOT + tr ) + ger_share*price_bat*target_ec/dummy;
+Z1( (southam-1)*kTOT + nmet_dir, (hungary-1)*kTOT + elman) = Z1( (southam-1)*kTOT + nmet_dir, (hungary-1)*kTOT + elman) + ger_share*dem_lit/dummy;
 
-Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) = Z1( (UK-1)*kTOT + tr, (UK-1)*kTOT + elman ) + UK_share*price_bat*target_ec/dummy;
-Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) = Z1( (UK-1)*kTOT + elman, (southam-1)*kTOT + nmet_dir) + UK_share*dem_lit/dummy;
+Z1( (UK-1)*kTOT + elman, (UK-1)*kTOT + tr ) = Z1( (UK-1)*kTOT + elman, (UK-1)*kTOT + tr ) + UK_share*price_bat*target_ec/dummy;
+Z1( (southam-1)*kTOT + nmet_dir, (UK-1)*kTOT + elman) = Z1( (southam-1)*kTOT + nmet_dir, (UK-1)*kTOT + elman) + UK_share*dem_lit/dummy;
 
 %% annual demand shock (not to be divided for useful life)
 count = count +1; 
@@ -240,11 +238,11 @@ xlswrite("resultbio.xlsx",DA,'DA');
 xlswrite("resultbio.xlsx",DAaggr_co,'DAco');
 xlswrite("resultbio.xlsx",DAaggr_sec,'DAsec');
 
-xlswrite("resultmixnewnoUK.xlsx",DE,'DE');
-xlswrite("resultmixnewnoUK.xlsx",DEaggr_co,'DEco');
-xlswrite("resultmixnewnoUK.xlsx",DEaggr_sec,'DEsec');
+xlswrite("BIGFIXwind.xlsx",DE,'DE');
+xlswrite("BIGFIXwind.xlsx",DEaggr_co,'DEco');
+xlswrite("BIGFIXwind.xlsx",DEaggr_sec,'DEsec');
 
-xlswrite("resultmixnewnoUK.xlsx",DR,'DR');
-xlswrite("resultmixnewnoUK.xlsx",DRaggr_co,'DRco');
-xlswrite("resultmixnewnoUK.xlsx",DRaggr_sec,'DRsec');
+xlswrite("BIGFIXwind.xlsx",DR,'DR');
+xlswrite("BIGFIXwind.xlsx",DRaggr_co,'DRco');
+xlswrite("BIGFIXwind.xlsx",DRaggr_sec,'DRsec');
 
