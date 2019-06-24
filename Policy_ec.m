@@ -238,11 +238,9 @@ xlswrite("resultbio.xlsx",DA,'DA');
 xlswrite("resultbio.xlsx",DAaggr_co,'DAco');
 xlswrite("resultbio.xlsx",DAaggr_sec,'DAsec');
 
-xlswrite("BIGFIXwind.xlsx",DE,'DE');
-xlswrite("BIGFIXwind.xlsx",DEaggr_co,'DEco');
-xlswrite("BIGFIXwind.xlsx",DEaggr_sec,'DEsec');
+xlswrite("sens_eeonly.xlsx",DEaggr_co,'DEco');
+xlswrite("sens_eeonly.xlsx",DEaggr_sec,'DEsec');
 
-xlswrite("BIGFIXwind.xlsx",DR,'DR');
-xlswrite("BIGFIXwind.xlsx",DRaggr_co,'DRco');
-xlswrite("BIGFIXwind.xlsx",DRaggr_sec,'DRsec');
+xlswrite("sens_eeonly.xlsx",DRaggr_co,'DRco');
+xlswrite("sens_eeonly.xlsx",DRaggr_sec,'DRsec');
 
